@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeAlpha URL Shortener</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #5568d8;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 16px;
+        }
+
+        #result a {
+            color: #667eea;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        #result a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🔗 URL Shortener</h1>
+
+        <p class="description">
+            Convert long URLs into short and easy-to-share links.
+        </p>
+
+        <div class="input-group">
+            <input
+                type="text"
+                id="urlInput"
+                placeholder="Paste your URL here"
+            >
+
+            <button onclick="shortenUrl()">
+                Shorten
+            </button>
+        </div>
+
+        <p id="result"></p>
+
+        <p class="footer">
+            CodeAlpha Backend Development Project
+        </p>
+
+    </div>
+
+    <script>
+        async function shortenUrl() {
+
+            const url = document.getElementById("urlInput").value;
+
+            if (!url) {
+                document.getElementById("result").textContent =
+                    "Please enter a URL.";
+                return;
+            }
+
+            try {
+
+                const response = await fetch("/shorten", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        url: url
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.shortUrl) {
+
+                    document.getElementById("result").innerHTML =
+                        `Your short URL: 
+                        <a href="${data.shortUrl}" target="_blank">
+                            ${data.shortUrl}
+                        </a>`;
+
+                } else {
+
+                    document.getElementById("result").textContent =
+                        data.error;
+
+                }
+
+            } catch (error) {
+
+                document.getElementById("result").textContent =
+                    "Something went wrong. Please try again.";
+
+            }
+        }
+    </script>
+
+</body>
+</html>
